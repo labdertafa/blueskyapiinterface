@@ -41,7 +41,7 @@ import javax.ws.rs.core.Response;
  * @author Rafael
  * @version 1.1
  * @created 03/08/2024
- * @updated 17/08/2024
+ * @updated 20/08/2024
  */
 public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatusApi {
     public BlueskyStatusApiImpl(String accessToken) {
@@ -108,7 +108,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
 
     @Override
     public BlueskyCreateRecordResponse postStatus(String userId, String text) {
-        return this.postStatus(userId, text, null);
+        return this.postStatus(userId, text, null, null);
     }
 
     @Override
@@ -187,9 +187,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
         return null;
     }
     
-    private BlueskyUploadImageResponse cargarimagen(String imagePath) {
-        String mediaType = this.apiConfig.getProperty("image_media_type");
-        
+    private BlueskyUploadImageResponse cargarimagen(String imagePath, String mediaType) {
         try {
             return this.uploadImage(imagePath, mediaType);
         } catch (Exception e) {
@@ -203,7 +201,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
     }
     
     @Override
-    public BlueskyCreateRecordResponse postStatus(String userId, String text, String imagePath) {
+    public BlueskyCreateRecordResponse postStatus(String userId, String text, String imagePath, String mediaType) {
         // Se extraen los distintos elementos del post (Links y Hastags)
         List<ElementoPost> elementos = PostUtils.extraerElementosPost(text);
         List<BlueskyFacet> facets = elementos.stream()
@@ -217,7 +215,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
             String thumbnail = getThumbnail(elementos);
             if (thumbnail != null) {
                 // Se sube la imagen a Bluesky
-                BlueskyUploadImageResponse uploadImageResponse = this.cargarimagen(thumbnail);
+                BlueskyUploadImageResponse uploadImageResponse = this.cargarimagen(thumbnail, mediaType);
                 
                 // Si se logró subir la imagen a Bluesky
                 if (uploadImageResponse != null) {
@@ -226,7 +224,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
                 }
             }
         } else {    // Si hay imagen se debe cargar a Bluesky
-            BlueskyUploadImageResponse uploadImageResponse = this.cargarimagen(imagePath);
+            BlueskyUploadImageResponse uploadImageResponse = this.cargarimagen(imagePath, mediaType);
             if (uploadImageResponse != null) {
                 BlueskyEmbed embed = new BlueskyEmbed(uploadImageResponse.getBlob());
                 record = new BlueskyRecord<>(text, facets, embed);

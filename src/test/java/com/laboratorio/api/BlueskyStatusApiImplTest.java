@@ -21,7 +21,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 03/08/2024
- * @updated 17/08/2024
+ * @updated 20/08/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -104,8 +104,9 @@ public class BlueskyStatusApiImplTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String imagen = "C:\\Users\\rafa\\Pictures\\Formula_1\\Spa_1950.jpg";
         String text = "Estado de prueba enviado desde la aplicación SocialImprove con un test unitario JUNIT. Tiene un link: https://laboratoriorafa.mooo.com y 2 hashtags #SiguemeYTeSigo #Followback";
+        String imageType = "image/jpeg";
         
-        BlueskyCreateRecordResponse response = this.statusApi.postStatus(userId, text, imagen);
+        BlueskyCreateRecordResponse response = this.statusApi.postStatus(userId, text, imagen, imageType);
         uriElim = response.getUri();
         assertTrue(response.getUri() != null);
     }

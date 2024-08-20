@@ -12,7 +12,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.1
  * @created 03/08/2024
- * @updated 17/08/2024
+ * @updated 20/08/2024
  */
 public interface BlueskyStatusApi {
     // Consultar un status por su id
@@ -25,7 +25,7 @@ public interface BlueskyStatusApi {
     
     // Postear un status con imagen
     BlueskyUploadImageResponse uploadImage(String filePath, String mediaType) throws Exception;
-    BlueskyCreateRecordResponse postStatus(String userId, String text, String imagePath);
+    BlueskyCreateRecordResponse postStatus(String userId, String text, String imagePath, String mediaType);
     
     // Ver las cuentas que han impulsado o marcado como favorito un status
     List<BlueskyActor> getRebloggedBy(String uri) throws Exception;
