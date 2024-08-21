@@ -1,7 +1,6 @@
 package com.laboratorio.blueskyapiinterface.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.FileReader;
 import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,15 +23,9 @@ public class BlueskyApiConfig {
     }
 
     private void loadProperties() {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("bluesky_api.properties")) {
-            if (input == null) {
-                log.error("No ha sido posible recuperar el fichero de configuración del API Bluesky. Finalizando aplicación!");
-                System.exit(-1);
-                return;
-            }
-            properties.load(input);
-            input.close();
-        } catch (IOException e) {
+        try {
+            this.properties.load(new FileReader("config//bluesky_api.properties"));
+        } catch (Exception e) {
             log.error("Ha ocurrido un error leyendo el fichero de configuración del API de Bluesky. Finaliza la aplicación!");
             log.error(String.format("Error: %s", e.getMessage()));
             if (e.getCause() != null) {
