@@ -41,7 +41,7 @@ import javax.ws.rs.core.Response;
  * @author Rafael
  * @version 1.1
  * @created 03/08/2024
- * @updated 20/08/2024
+ * @updated 27/08/2024
  */
 public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatusApi {
     public BlueskyStatusApiImpl(String accessToken) {
@@ -168,7 +168,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
         try {
             for (ElementoPost elem : elementos) {
                 if (elem.getType() == TipoElementoPost.Link) {
-                    if (elem.getContenido().contains("youtube.com")) {
+                    if ((elem.getContenido().contains("youtube.com")) || (elem.getContenido().contains("https://youtu.be"))) {
                         Map<String, String> metadata = PostUtils.getYouTubeMetadata(elem.getContenido());
                         String imageUrl = metadata.get("og:image");
                         if (imageUrl != null) {
