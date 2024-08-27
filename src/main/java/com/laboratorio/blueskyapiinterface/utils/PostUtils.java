@@ -30,7 +30,7 @@ import org.jsoup.nodes.Element;
  * @author Rafael
  * @version 1.0
  * @created 07/08/2024
- * @updated 16/08/2024
+ * @updated 27/08/2024
  */
 public class PostUtils {
     private PostUtils() {
@@ -125,5 +125,28 @@ public class PostUtils {
         }
         
             return true;
+    }
+    
+    public static String getThumbnail(List<ElementoPost> elementos) {
+        try {
+            for (ElementoPost elem : elementos) {
+                if (elem.getType() == TipoElementoPost.Link) {
+                    if ((elem.getContenido().contains("youtube.com")) || (elem.getContenido().contains("https://youtu.be"))) {
+                        Map<String, String> metadata = PostUtils.getYouTubeMetadata(elem.getContenido());
+                        String imageUrl = metadata.get("og:image");
+                        if (imageUrl != null) {
+                            String destination = BlueskyApiConfig.getInstance().getProperty("temporal_image_path");
+                            if (PostUtils.saveImageUrl(imageUrl, destination)) {
+                                return destination;
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (BlueskyException e) {
+            return null;
+        }
+        
+        return null;
     }
 }

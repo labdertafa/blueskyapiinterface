@@ -164,29 +164,6 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
         }
     }
     
-    private String getThumbnail(List<ElementoPost> elementos) {
-        try {
-            for (ElementoPost elem : elementos) {
-                if (elem.getType() == TipoElementoPost.Link) {
-                    if ((elem.getContenido().contains("youtube.com")) || (elem.getContenido().contains("https://youtu.be"))) {
-                        Map<String, String> metadata = PostUtils.getYouTubeMetadata(elem.getContenido());
-                        String imageUrl = metadata.get("og:image");
-                        if (imageUrl != null) {
-                            String destination = this.apiConfig.getProperty("temporal_image_path");
-                            if (PostUtils.saveImageUrl(imageUrl, destination)) {
-                                return destination;
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (BlueskyException e) {
-            return null;
-        }
-        
-        return null;
-    }
-    
     private BlueskyUploadImageResponse cargarimagen(String imagePath, String mediaType) {
         try {
             return this.uploadImage(imagePath, mediaType);
@@ -212,7 +189,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
         BlueskyRecord<String> record = null;
         // Si no hay imagen, se verifica si hay alguna URL de youtube y se recupera su Thumbnail para agregarlo al post
         if (imagePath == null) {
-            String thumbnail = getThumbnail(elementos);
+            String thumbnail = PostUtils.getThumbnail(elementos);
             if (thumbnail != null) {
                 // Se sube la imagen a Bluesky
                 BlueskyUploadImageResponse uploadImageResponse = this.cargarimagen(thumbnail, mediaType);
