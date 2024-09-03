@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
  * @author Rafael
  * @version 1.1
  * @created 04/08/2024
- * @updated 17/08/2024
+ * @updated 03/09/2024
  */
 public class BlueskyNotificationApiTest {
     private BlueskyNotificationApi notificationApi;
@@ -26,43 +26,21 @@ public class BlueskyNotificationApiTest {
     }
     
     @Test
-    public void get10Notifications() throws Exception { // Usando limit por defecto
-        int cantidad  = 10;
+    public void getNotificationsWithSinceIdAndDefaultLimit() throws Exception { // Usando limit por defecto
+        String sinceId = "2024-08-31T15:00:17.180Z";
         
-        BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(0, cantidad);
+        BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(0, sinceId);
 
-        assertEquals(cantidad, notificationListResponse.getNotifications().size());
-        assertTrue(notificationListResponse.getCursor() != null);
+        assertTrue(!notificationListResponse.getNotifications().isEmpty());
     }
     
     @Test
-    public void get10NotificationsWithLimit() throws Exception { // Usando limit definido
+    public void getAllNotificationsWithLimit() throws Exception { // Usando limit definido
         int limit = 80;
-        int cantidad  = 10;
-        
-        BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(limit, cantidad);
-
-        assertEquals(cantidad, notificationListResponse.getNotifications().size());
-        assertTrue(notificationListResponse.getCursor() != null);
-    }
-    
-    @Test
-    public void get110Notifications() throws Exception {
-        int cantidad  = 110;
-        
-        BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(cantidad);
-
-        assertTrue(notificationListResponse.getNotifications().size() > 10);
-    }
-    
-    @Test
-    public void getAllNotifications() throws Exception {
-        int limit = 100;
         
         BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(limit);
 
-        assertTrue(notificationListResponse.getNotifications().size() >= 0);
-        assertTrue(notificationListResponse.getCursor() != null);
+        assertTrue(!notificationListResponse.getNotifications().isEmpty());
     }
     
     @Test
@@ -77,11 +55,10 @@ public class BlueskyNotificationApiTest {
     @Test
     public void getNotificationsWithSinceId() throws Exception {
         int limit = 100;
-        String sinceId = "2024-07-09T15:00:17.180Z";
+        String sinceId = "2024-08-31T15:00:17.180Z";
 
-        BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(limit, 0, sinceId);
+        BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(limit, sinceId);
 
         assertTrue(notificationListResponse.getNotifications().size() >= 0);
-        assertTrue(notificationListResponse.getCursor()!= null);
     }
 }
