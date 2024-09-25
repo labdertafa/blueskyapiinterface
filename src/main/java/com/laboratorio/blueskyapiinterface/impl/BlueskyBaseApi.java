@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  * @author Rafael
  * @version 1.1
  * @created 01/08/2024
- * @updated 17/08/2024
+ * @updated 09/09/2024
  */
 public class BlueskyBaseApi {
     protected static final Logger log = LogManager.getLogger(BlueskyBaseApi.class);
@@ -46,7 +46,7 @@ public class BlueskyBaseApi {
     protected void logException(Exception e) {
         log.error("Error: " + e.getMessage());
         if (e.getCause() != null) {
-            log.error("Causa: " + e.getMessage());
+            log.error("Causa: " + e.getCause().getMessage());
         }
     }
     
