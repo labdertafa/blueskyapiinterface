@@ -1,10 +1,10 @@
 package com.laboratorio.api;
 
 import com.laboratorio.blueskyapiinterface.BlueskyNotificationApi;
-import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.impl.BlueskyNotificationApiImpl;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyNotificationListResponse;
 import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
  * @author Rafael
  * @version 1.1
  * @created 04/08/2024
- * @updated 03/09/2024
+ * @updated 04/10/2024
  */
 public class BlueskyNotificationApiTest {
     private BlueskyNotificationApi notificationApi;
@@ -47,7 +47,7 @@ public class BlueskyNotificationApiTest {
     public void getNotificationError() {
         this.notificationApi = new BlueskyNotificationApiImpl("INVALID_ACCESS_TOKEN");
 
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.notificationApi.getAllNotifications();
         });
     }

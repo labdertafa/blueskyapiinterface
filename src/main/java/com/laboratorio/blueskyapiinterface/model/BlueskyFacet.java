@@ -1,6 +1,6 @@
 package com.laboratorio.blueskyapiinterface.model;
 
-import com.laboratorio.blueskyapiinterface.utils.ElementoPost;
+import com.laboratorio.clientapilibrary.utils.ElementoPost;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
  * @author Rafael
  * @version 1.0
  * @created 07/08/2024
- * @updated 07/08/2024
+ * @updated 04/10/2024
  */
 
 @Getter @Setter @AllArgsConstructor

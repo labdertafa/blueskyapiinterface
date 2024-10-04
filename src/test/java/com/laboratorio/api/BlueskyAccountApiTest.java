@@ -1,12 +1,12 @@
 package com.laboratorio.api;
 
 import com.laboratorio.blueskyapiinterface.BlueskyAccountApi;
-import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.impl.BlueskyAccountApiImpl;
 import com.laboratorio.blueskyapiinterface.model.BlueskyAccount;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyFollowListResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyRelationshipsResponse;
 import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 02/08/2024
- * @updated 17/08/2024
+ * @updated 04/10/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -45,7 +45,7 @@ public class BlueskyAccountApiTest {
     public void findAccountByInvalidId() {
         String did = "did:plc:r3mpahk677b3m3iuubXXXXXXXX";
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.getAccountById(did);
         });
     }
@@ -62,7 +62,7 @@ public class BlueskyAccountApiTest {
     public void getAccountsByInvalidId() {
         List<String> ids = List.of("diXXplc:zkxkfxfchezxypxrtgc7yaqz", "diXXplc:r3mpahk677b3m3iuub7p35zc");
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.getAccountsById(ids);
         });
     }
@@ -79,7 +79,7 @@ public class BlueskyAccountApiTest {
     public void getAccountByInvalidUsername() {
         String username = "bakercilla.bsky.socialAXMNLXJ";
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.getAccountByUsername(username);
         });
     }
@@ -146,7 +146,7 @@ public class BlueskyAccountApiTest {
     public void getAllFollowersInvalidId() {
         String did = "did:plc:zkxkfxfchezxypxrtgc7yXXXXXX";
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.getFollowers(did);
         });
     }
@@ -213,7 +213,7 @@ public class BlueskyAccountApiTest {
     public void getAllFollowingsInvalidId() {
         String did = "did:plc:zkxkfxfchezxypxrtgc7yXXXXXX";
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.getFollowings(did);
         });
     }
@@ -232,7 +232,7 @@ public class BlueskyAccountApiTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String subject = "diXXXlc:ytanl7b6yr5rswhnygnr3a7j";
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.followAccount(userId, subject);
         });
     }
@@ -254,7 +254,7 @@ public class BlueskyAccountApiTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String uri = "";
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.unfollowAccount(userId, uri);
         });
     }
@@ -273,7 +273,7 @@ public class BlueskyAccountApiTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         List<String> ids = List.of("diXXplc:zkxkfxfchezxypxrtgc7yaqz");
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.accountApi.checkrelationships(userId, ids);
         });
     }

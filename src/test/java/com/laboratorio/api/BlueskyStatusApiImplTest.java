@@ -1,13 +1,13 @@
 package com.laboratorio.api;
 
 import com.laboratorio.blueskyapiinterface.BlueskyStatusApi;
-import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.impl.BlueskyStatusApiImpl;
 import com.laboratorio.blueskyapiinterface.model.BlueskyActor;
 import com.laboratorio.blueskyapiinterface.model.BlueskyStatus;
 import com.laboratorio.blueskyapiinterface.model.BlueskySubject;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordResponse;
 import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.1
  * @created 03/08/2024
- * @updated 20/08/2024
+ * @updated 04/10/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -47,7 +47,7 @@ public class BlueskyStatusApiImplTest {
     public void getInvalidStatusId() {
         String uri = "XX://did:plc:vli2z522aj2bancr24qugm7n/app.bsky.feed.post/3kyslpcmpxd2v";
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.getStatusById(uri);
         });
     }
@@ -75,7 +75,7 @@ public class BlueskyStatusApiImplTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String text = null;
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.postStatus(userId, text);
         });
     }
@@ -94,7 +94,7 @@ public class BlueskyStatusApiImplTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String uri = null;
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.deleteStatus(userId, uri);
         });
     }
@@ -151,7 +151,7 @@ public class BlueskyStatusApiImplTest {
     public void getInvalidRebloggedBy() {
         String uri = "atXXXdid:plc:inttb7q4wphod7lj7x4o3b7x/app.bsky.feed.post/3kyqdlkrzij2k";
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.getRebloggedBy(uri);
         });
     }
@@ -168,7 +168,7 @@ public class BlueskyStatusApiImplTest {
     public void getInvalidFavouritedBy() {
         String uri = "atXXXdid:plc:inttb7q4wphod7lj7x4o3b7x/app.bsky.feed.post/3kyqdlkrzij2k";
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.getFavouritedBy(uri);
         });
     }
@@ -189,7 +189,7 @@ public class BlueskyStatusApiImplTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         BlueskySubject subject = new BlueskySubject("bafyreichier7pufq2xikomrzon6fi2myjxqjxv3gxuhirewzwxxl7orvta", null);
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.reblogStatus(userId, subject);
         });
     }
@@ -208,7 +208,7 @@ public class BlueskyStatusApiImplTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String uri = null;
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.unreblogStatus(userId, uri);
         });
     }
@@ -228,7 +228,7 @@ public class BlueskyStatusApiImplTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         BlueskySubject subject = new BlueskySubject("bafyreichier7pufq2xikomrzon6fi2myjxqjxv3gxuhirewzwxxl7orvta", null);
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.favouriteStatus(userId, subject);
         });
     }
@@ -247,7 +247,7 @@ public class BlueskyStatusApiImplTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String uri = null;
         
-        assertThrows(BlueskyException.class, () -> {
+        assertThrows(ApiClientException.class, () -> {
             this.statusApi.unfavouriteStatus(userId, uri);
         });
     }

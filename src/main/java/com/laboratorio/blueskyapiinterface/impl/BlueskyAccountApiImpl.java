@@ -1,9 +1,7 @@
 package com.laboratorio.blueskyapiinterface.impl;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.laboratorio.blueskyapiinterface.BlueskyAccountApi;
-import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.model.BlueskyAccount;
 import com.laboratorio.blueskyapiinterface.model.BlueskyCreateRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyDeleteRecord;
@@ -13,20 +11,18 @@ import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordRes
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyFollowListResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyRelationshipsResponse;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
+import com.laboratorio.clientapilibrary.model.ApiMethodType;
+import com.laboratorio.clientapilibrary.model.ApiRequest;
+import com.laboratorio.clientapilibrary.model.ApiResponse;
 import java.util.List;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  *
  * @author Rafael
  * @version 1.1
  * @created 02/08/2024
- * @updated 17/08/2024
+ * @updated 04/10/2024
  */
 public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAccountApi {
    public BlueskyAccountApiImpl(String accessToken) {
@@ -35,49 +31,28 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
 
     @Override
     public BlueskyAccount getAccountById(String id) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("getAccountById_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getAccountById_ok_status"));
         
         try {
             String url = endpoint;
-            WebTarget target = client.target(url)
-                    .queryParam("actor", id);
+            ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.GET);
+            request.addApiPathParam("actor", id);
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new BlueskyException(BlueskyAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, BlueskyAccount.class);
+            return this.gson.fromJson(response.getResponseStr(), BlueskyAccount.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (BlueskyException e) {
+        } catch (ApiClientException e) {
             throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
         }
     }
     
     @Override
     public List<BlueskyAccount> getAccountsById(List<String> ids) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("getAccountsById_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getAccountsById_ok_status"));
         int maxLimit = Integer.parseInt(this.apiConfig.getProperty("getAccountsById_max_limit"));
@@ -85,37 +60,20 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
         
         try {
             String url = endpoint;
-            WebTarget target = client.target(url);
+            ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.GET);
             for (String id: idsToProcess) {
-                target = target.queryParam("actors", id);
+                request.addApiPathParam("actors", id);
             }
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new BlueskyException(BlueskyAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, BlueskyAccountListResponse.class).getProfiles();
+            return this.gson.fromJson(response.getResponseStr(), BlueskyAccountListResponse.class).getProfiles();
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (BlueskyException e) {
+        } catch (ApiClientException e) {
             throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
         }
     }
 
@@ -204,45 +162,26 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
 
     @Override
     public BlueskyRelationshipsResponse checkrelationships(String userId, List<String> ids) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("checkrelationships_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("checkrelationships_ok_status"));
         
         try {
             String url = endpoint;
-            WebTarget target = client.target(url)
-                    .queryParam("actor", userId);
+            ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.GET);
+            request.addApiPathParam("actor", userId);
             for (String id : ids) {
-                target = target.queryParam("others", id);
+                request.addApiPathParam("others", id);
             }
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new BlueskyException(BlueskyAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, BlueskyRelationshipsResponse.class);
+            return this.gson.fromJson(response.getResponseStr(), BlueskyRelationshipsResponse.class);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (BlueskyException e) {
+        } catch (ApiClientException e) {
             throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
         }
     }
 }

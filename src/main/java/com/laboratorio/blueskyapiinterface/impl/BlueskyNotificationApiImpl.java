@@ -1,25 +1,21 @@
 package com.laboratorio.blueskyapiinterface.impl;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.laboratorio.blueskyapiinterface.BlueskyNotificationApi;
-import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.model.BlueskyNotification;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyNotificationListResponse;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
+import com.laboratorio.clientapilibrary.model.ApiMethodType;
+import com.laboratorio.clientapilibrary.model.ApiRequest;
+import com.laboratorio.clientapilibrary.model.ApiResponse;
 import java.util.List;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 04/08/2024
- * @updated 03/09/2024
+ * @updated 04/10/2024
  */
 public class BlueskyNotificationApiImpl extends BlueskyBaseApi implements BlueskyNotificationApi {
     public BlueskyNotificationApiImpl(String accessToken) {
@@ -38,32 +34,19 @@ public class BlueskyNotificationApiImpl extends BlueskyBaseApi implements Bluesk
 
     // Función que devuelve una página de notificaciones de una cuenta
     private BlueskyNotificationListResponse getNotificationPage(String url, int limit, int okStatus, String posicionInicial) throws Exception {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
-        
         try {
-            WebTarget target = client.target(url)
-                        .queryParam("limit", limit);
+            ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.GET);
+            request.addApiPathParam("limit", Integer.toString(limit));
             if (posicionInicial != null) {
-                target = target.queryParam("cursor", posicionInicial);
+                request.addApiPathParam("cursor", posicionInicial);
             }
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            log.debug("Se ejecutó la query: " + url);
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new BlueskyException(BlueskyNotificationApiImpl.class.getName(), str);
-            }
-            
-            Gson gson = new Gson();
-            BlueskyNotificationListResponse notificationListResponse = gson.fromJson(jsonStr, BlueskyNotificationListResponse.class);
+            BlueskyNotificationListResponse notificationListResponse = gson.fromJson(response.getResponseStr(), BlueskyNotificationListResponse.class);
             log.debug("Resultados encontrados: " + notificationListResponse.getNotifications().size());
-            log.debug("Valor del ssenAt: " + notificationListResponse.getSeenAt());
+            log.debug("Valor del seenAt: " + notificationListResponse.getSeenAt());
             log.debug("Valor del max_id: " + notificationListResponse.getCursor());
 
             // return accounts;
@@ -71,13 +54,8 @@ public class BlueskyNotificationApiImpl extends BlueskyBaseApi implements Bluesk
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (BlueskyException e) {
+        } catch (ApiClientException e) {
             throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
         }
     }
 

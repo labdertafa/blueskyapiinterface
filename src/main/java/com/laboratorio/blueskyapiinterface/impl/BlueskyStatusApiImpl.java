@@ -1,9 +1,7 @@
 package com.laboratorio.blueskyapiinterface.impl;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.laboratorio.blueskyapiinterface.BlueskyStatusApi;
-import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.model.BlueskyActor;
 import com.laboratorio.blueskyapiinterface.model.BlueskyCreateRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyDeleteRecord;
@@ -16,32 +14,26 @@ import com.laboratorio.blueskyapiinterface.model.BlueskySubject;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyFollowListResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUploadImageResponse;
-import com.laboratorio.blueskyapiinterface.utils.ElementoPost;
+import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
-import com.laboratorio.blueskyapiinterface.utils.PostUtils;
-import com.laboratorio.blueskyapiinterface.utils.TipoElementoPost;
+import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
+import com.laboratorio.clientapilibrary.model.ApiMethodType;
+import com.laboratorio.clientapilibrary.model.ApiRequest;
+import com.laboratorio.clientapilibrary.model.ApiResponse;
+import com.laboratorio.clientapilibrary.utils.ElementoPost;
+import com.laboratorio.clientapilibrary.utils.PostUtils;
+import com.laboratorio.clientapilibrary.utils.TipoElementoPost;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 03/08/2024
- * @updated 27/08/2024
+ * @updated 04/10/2024
  */
 public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatusApi {
     public BlueskyStatusApiImpl(String accessToken) {
@@ -62,47 +54,27 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
     
     @Override
     public List<BlueskyStatus> getStatusByIds(String[] ids) {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("getStatusById_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getStatusById_ok_status"));
         int maxLimit = Integer.parseInt(this.apiConfig.getProperty("getStatusById_max_limit"));
         
-        
         try {
             String url = endpoint;
-            WebTarget target = client.target(url);
+            ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.GET);
             for (int i = 0; (i < ids.length) && (i < maxLimit); i++) {
-                target = target.queryParam("uris", ids[i]);
+                request.addApiPathParam("uris", ids[i]);
             }
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            response = target.request(MediaType.APPLICATION_JSON)
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .get();
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new BlueskyException(BlueskyAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta JSON recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            BlueskyPostList postList = gson.fromJson(jsonStr, BlueskyPostList.class);
+            BlueskyPostList postList = gson.fromJson(response.getResponseStr(), BlueskyPostList.class);
             return Arrays.asList(postList.getPosts());
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
-        } catch (BlueskyException e) {
+        } catch (ApiClientException e) {
             throw e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
         }
     }
 
@@ -122,45 +94,23 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
     
     @Override
     public BlueskyUploadImageResponse uploadImage(String filePath, String mediaType) throws Exception {
-        Client client = ClientBuilder.newClient();
-        Response response = null;
         String endpoint = this.apiConfig.getProperty("UploadImage_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("UploadImage_ok_status"));
         
         try {
             String url = endpoint;
-            WebTarget target = client.target(url);
-            
             File imageFile = new File(filePath);
-            InputStream fileStream = new FileInputStream(imageFile);
+            ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.POST, imageFile);
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
-            response = target.request()
-                    .header(HttpHeaders.AUTHORIZATION, "Bearer " + this.accessToken)
-                    .header(HttpHeaders.CONTENT_TYPE, mediaType)
-                    .post(Entity.entity(fileStream, MediaType.APPLICATION_OCTET_STREAM_TYPE));
+            ApiResponse response = this.client.executeApiRequest(request);
             
-            String jsonStr = response.readEntity(String.class);
-            if (response.getStatus() != okStatus) {
-                log.error(String.format("Respuesta del error %d: %s", response.getStatus(), jsonStr));
-                String str = "Error ejecutando: " + url + ". Se obtuvo el código de error: " + response.getStatus();
-                throw new BlueskyException(BlueskyAccountApiImpl.class.getName(), str);
-            }
-            
-            log.debug("Se ejecutó la query: " + url);
-            log.debug("Respuesta recibida: " + jsonStr);
-            
-            Gson gson = new Gson();
-            return gson.fromJson(jsonStr, BlueskyUploadImageResponse.class);
-        } catch (JsonSyntaxException | FileNotFoundException e) {
+            return this.gson.fromJson(response.getResponseStr(), BlueskyUploadImageResponse.class);
+        } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
-        } catch (BlueskyException e) {
+        } catch (ApiClientException e) {
             throw  e;
-        } finally {
-            if (response != null) {
-                response.close();
-            }
-            client.close();
         }
     }
     
@@ -182,6 +132,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
         // Se extraen los distintos elementos del post (Links y Hastags)
         List<ElementoPost> elementos = PostUtils.extraerElementosPost(text);
         List<BlueskyFacet> facets = elementos.stream()
+                .filter(elem -> elem.getType() != TipoElementoPost.Normal)
                 .map(elem -> new BlueskyFacet(elem))
                 .collect(Collectors.toList());
         
@@ -189,7 +140,8 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
         BlueskyRecord<String> record = null;
         // Si no hay imagen, se verifica si hay alguna URL de youtube y se recupera su Thumbnail para agregarlo al post
         if (imagePath == null) {
-            String thumbnail = PostUtils.getThumbnail(elementos);
+            String destination = BlueskyApiConfig.getInstance().getProperty("temporal_image_path");
+            String thumbnail = PostUtils.getThumbnail(elementos, destination);
             if (thumbnail != null) {
                 // Se sube la imagen a Bluesky
                 BlueskyUploadImageResponse uploadImageResponse = this.cargarimagen(thumbnail, mediaType);

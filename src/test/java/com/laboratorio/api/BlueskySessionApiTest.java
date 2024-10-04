@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
  * @author Rafael
  * @version 1.1
  * @created 01/08/2024
- * @updated 17/08/2024
+ * @updated 04/10/2024
  */
 public class BlueskySessionApiTest {
     private BlueskySessionApi sessionApi;
@@ -21,7 +21,7 @@ public class BlueskySessionApiTest {
     @BeforeEach
     public void initApi() {
         String accessToken = BlueskyApiConfig.getInstance().getProperty("test_access_token");
-        String refreshToken = BlueskyApiConfig.getInstance().getProperty("test_access_token");
+        String refreshToken = BlueskyApiConfig.getInstance().getProperty("test_refresh_token");
         this.sessionApi = new BlueskySessionApiImpl(accessToken, refreshToken);
     }
     
