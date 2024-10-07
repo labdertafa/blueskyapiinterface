@@ -101,6 +101,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
             String url = endpoint;
             File imageFile = new File(filePath);
             ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.POST, imageFile);
+            request.addApiHeader("Content-Type", mediaType);
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
