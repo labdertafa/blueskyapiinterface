@@ -27,7 +27,6 @@ public class BlueskyAccount {
     private int followsCount;
     private int postsCount;
     BlueskyAssociated associated;
-    // BlueskyJoinedViaStarterPack joinedViaStarterPack;
     private String indexedAt;
     private String createdAt;
     BlueskyViewer viewer;

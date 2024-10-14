@@ -8,9 +8,9 @@ import java.util.List;
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 02/08/2024
- * @updated 17/08/2024
+ * @updated 14/10/2024
  */
 public interface BlueskyAccountApi {
     // Obtiene la información de un usuario a partir de su ID
@@ -34,4 +34,6 @@ public interface BlueskyAccountApi {
     boolean unfollowAccount(String userId, String uri);
     // Chequea la relación entre el usuario identificado por "userId" y un listado de cuentas identificadas por su id
     BlueskyRelationshipsResponse checkrelationships(String userId, List<String> ids);
+    
+    List<BlueskyAccount> getSuggestions(int quantity);
 }

@@ -7,12 +7,14 @@ import com.laboratorio.blueskyapiinterface.model.BlueskyCreateRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyDeleteRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyEmbed;
 import com.laboratorio.blueskyapiinterface.model.BlueskyFacet;
+import com.laboratorio.blueskyapiinterface.model.BlueskyFeed;
 import com.laboratorio.blueskyapiinterface.model.BlueskyPostList;
 import com.laboratorio.blueskyapiinterface.model.BlueskyRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyStatus;
 import com.laboratorio.blueskyapiinterface.model.BlueskySubject;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyFollowListResponse;
+import com.laboratorio.blueskyapiinterface.model.response.BlueskyTimelineResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUploadImageResponse;
 import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
@@ -24,6 +26,7 @@ import com.laboratorio.clientapilibrary.utils.ElementoPost;
 import com.laboratorio.clientapilibrary.utils.PostUtils;
 import com.laboratorio.clientapilibrary.utils.TipoElementoPost;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,9 +34,9 @@ import java.util.stream.Collectors;
 /**
  *
  * @author Rafael
- * @version 1.2
+ * @version 1.3
  * @created 03/08/2024
- * @updated 04/10/2024
+ * @updated 14/10/2024
  */
 public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatusApi {
     public BlueskyStatusApiImpl(String accessToken) {
@@ -250,5 +253,63 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
         BlueskyDeleteRecord deleteRecord = new BlueskyDeleteRecord(userId, collection, rkey);
 
         return this.deleteRecord(deleteRecord);
+    }
+    
+    private BlueskyTimelineResponse getTimelinePage(String uri, int okStatus, int limit, String cursor) {
+        try {
+            ApiRequest request = new ApiRequest(uri, okStatus, ApiMethodType.GET);
+            request.addApiPathParam("limit", Integer.toString(limit));
+            if (cursor != null) {
+                request.addApiPathParam("cursor", cursor);
+            }
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Authorization", "Bearer " + this.accessToken);
+            
+            ApiResponse response = this.client.executeApiRequest(request);
+            
+            return this.gson.fromJson(response.getResponseStr(), BlueskyTimelineResponse.class);
+        } catch (JsonSyntaxException e) {
+            logException(e);
+            throw  e;
+        } catch (ApiClientException e) {
+            throw  e;
+        }
+    }
+
+    @Override
+    public List<BlueskyStatus> getGlobalTimeline(int quantity) {
+        String endpoint = this.apiConfig.getProperty("getGlobalTimeLine_endpoint");
+        int defaultLimit = Integer.parseInt(this.apiConfig.getProperty("getGlobalTimeLine_default_limit"));
+        int okStatus = Integer.parseInt(this.apiConfig.getProperty("getGlobalTimeLine_ok_status"));
+        
+        List<BlueskyStatus> statuses = new ArrayList<>();
+        boolean continuar = true;
+        String cursor = null;
+        
+        try {
+            String uri = endpoint;
+            
+            do {
+                BlueskyTimelineResponse timelineResponse = this.getTimelinePage(uri, okStatus, defaultLimit, cursor);
+                log.debug("Elementos recuperados total: " + timelineResponse.getFeed().size());
+                for (BlueskyFeed feed : timelineResponse.getFeed()) {
+                    statuses.add(feed.getPost());
+                }
+                
+                cursor = timelineResponse.getCursor();
+                log.debug("getGlobalTimeline. Recuperados: " + statuses.size() + ". Cursor: " + cursor);
+                if (timelineResponse.getFeed().isEmpty()) {
+                    continuar = false;
+                } else {
+                    if ((cursor == null) || (statuses.size() >= quantity)) {
+                        continuar = false;
+                    }
+                }
+            } while (continuar);
+            
+            return statuses.subList(0, Math.min(quantity, statuses.size()));
+        } catch (Exception e) {
+            throw e;
+        }
     }
 }

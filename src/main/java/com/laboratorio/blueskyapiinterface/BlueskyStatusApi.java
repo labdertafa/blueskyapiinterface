@@ -10,9 +10,9 @@ import java.util.List;
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 03/08/2024
- * @updated 20/08/2024
+ * @updated 14/10/2024
  */
 public interface BlueskyStatusApi {
     // Consultar un status por su id
@@ -42,4 +42,7 @@ public interface BlueskyStatusApi {
     // Marcar y desmarcar un status  del usuario "userId" como favorito
     BlueskyCreateRecordResponse favouriteStatus(String userId, BlueskySubject subject);
     boolean unfavouriteStatus(String userId, String uri);
+    
+    // Permite recuperar el timeline global
+    List<BlueskyStatus> getGlobalTimeline(int quantity);
 }

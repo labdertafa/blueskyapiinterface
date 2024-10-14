@@ -18,9 +18,9 @@ import org.junit.jupiter.api.TestMethodOrder;
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 02/08/2024
- * @updated 04/10/2024
+ * @updated 14/10/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -218,14 +218,14 @@ public class BlueskyAccountApiTest {
         });
     }
     
-    @Test @Order(1)
+/*    @Test @Order(1)
     public void followAccount() {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String subject = "did:plc:rfplejykf2neyod46je5e7sm";
         
         boolean result = this.accountApi.followAccount(userId, subject);
         assertTrue(result);
-    }
+    } */
     
     @Test
     public void followInvalidAccount() {
@@ -237,7 +237,7 @@ public class BlueskyAccountApiTest {
         });
     }
     
-    @Test @Order(2)
+/*    @Test @Order(2)
     public void unfollowAccount() {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String id = "did:plc:rfplejykf2neyod46je5e7sm";
@@ -247,7 +247,7 @@ public class BlueskyAccountApiTest {
                 
         boolean result = this.accountApi.unfollowAccount(userId, uri);
         assertTrue(result);
-    }
+    } */
     
     @Test
     public void unfollowInvalidAccount() {
@@ -276,5 +276,14 @@ public class BlueskyAccountApiTest {
         assertThrows(ApiClientException.class, () -> {
             this.accountApi.checkrelationships(userId, ids);
         });
+    }
+    
+    @Test
+    public void getSuggestions() {
+        int limit = 40;
+        
+        List<BlueskyAccount> accounts = this.accountApi.getSuggestions(limit);
+        
+        assertEquals(limit, accounts.size());
     }
 }

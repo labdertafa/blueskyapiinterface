@@ -9,6 +9,8 @@ import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordRes
 import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -19,13 +21,14 @@ import org.junit.jupiter.api.TestMethodOrder;
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 03/08/2024
- * @updated 04/10/2024
+ * @updated 14/10/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class BlueskyStatusApiImplTest {
+    protected static final Logger log = LogManager.getLogger(BlueskyStatusApiImplTest.class);
     private BlueskyStatusApi statusApi;
     private static String uriElim = "";
     
@@ -250,5 +253,19 @@ public class BlueskyStatusApiImplTest {
         assertThrows(ApiClientException.class, () -> {
             this.statusApi.unfavouriteStatus(userId, uri);
         });
+    }
+    
+    @Test
+    public void getGlobalTimeline() {
+        int quantity = 50;
+        
+        List<BlueskyStatus> statuses = statusApi.getGlobalTimeline(quantity);
+        int i = 0;
+        for (BlueskyStatus status : statuses) {
+            i++;
+            log.info(i + "-) Status: " + status.toString());
+        }
+        
+        assertEquals(quantity, statuses.size());
     }
 }

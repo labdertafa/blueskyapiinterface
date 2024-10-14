@@ -9,16 +9,14 @@ import lombok.Setter;
 /**
  *
  * @author Rafael
- * @version 1.1
- * @created 03/08/2024
+ * @version 1.0
+ * @created 14/10/2024
  * @updated 14/10/2024
  */
-
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-public class BlueskyStatusRecord {
+public class BlueskyReason {
     @SerializedName("$type")
     private String type;
-    private String createdAt;
-    private String[] langs;
-    private String text;
+    private BlueskyAccount by;
+    private String indexedAt;
 }
