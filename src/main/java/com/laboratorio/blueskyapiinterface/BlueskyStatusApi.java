@@ -12,7 +12,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.2
  * @created 03/08/2024
- * @updated 14/10/2024
+ * @updated 17/10/2024
  */
 public interface BlueskyStatusApi {
     // Consultar un status por su id
@@ -20,12 +20,12 @@ public interface BlueskyStatusApi {
     List<BlueskyStatus> getStatusByIds(String[] ids);
     
     // Postear o eliminar un status.
-    BlueskyCreateRecordResponse postStatus(String userId, String text);
+    BlueskyStatus postStatus(String userId, String text);
     boolean deleteStatus(String userId, String uri);
     
     // Postear un status con imagen
     BlueskyUploadImageResponse uploadImage(String filePath, String mediaType) throws Exception;
-    BlueskyCreateRecordResponse postStatus(String userId, String text, String imagePath, String mediaType);
+    BlueskyStatus postStatus(String userId, String text, String imagePath, String mediaType);
     
     // Ver las cuentas que han impulsado o marcado como favorito un status
     List<BlueskyActor> getRebloggedBy(String uri) throws Exception;

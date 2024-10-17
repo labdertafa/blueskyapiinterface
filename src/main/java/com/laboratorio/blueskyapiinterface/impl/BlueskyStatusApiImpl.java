@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @author Rafael
  * @version 1.3
  * @created 03/08/2024
- * @updated 14/10/2024
+ * @updated 17/10/2024
  */
 public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatusApi {
     public BlueskyStatusApiImpl(String accessToken) {
@@ -82,7 +82,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
     }
 
     @Override
-    public BlueskyCreateRecordResponse postStatus(String userId, String text) {
+    public BlueskyStatus postStatus(String userId, String text) {
         return this.postStatus(userId, text, null, null);
     }
 
@@ -132,7 +132,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
     }
     
     @Override
-    public BlueskyCreateRecordResponse postStatus(String userId, String text, String imagePath, String mediaType) {
+    public BlueskyStatus postStatus(String userId, String text, String imagePath, String mediaType) {
         // Se extraen los distintos elementos del post (Links y Hastags)
         List<ElementoPost> elementos = PostUtils.extraerElementosPost(text);
         List<BlueskyFacet> facets = elementos.stream()
@@ -168,7 +168,15 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
             record = new BlueskyRecord(text, facets);
         }
         BlueskyCreateRecord<String> createRecord = new BlueskyCreateRecord(userId, collection, record);
-        return this.createRecord(createRecord);
+        
+        BlueskyCreateRecordResponse createRecordResponse = this.createRecord(createRecord);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            log.warn("No pude esperar la creación del record antes de consultarlo");
+        }
+        
+        return this.getStatusById(createRecordResponse.getUri());
     }
 
     @Override

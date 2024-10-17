@@ -23,7 +23,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.2
  * @created 03/08/2024
- * @updated 14/10/2024
+ * @updated 17/10/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -68,9 +68,9 @@ public class BlueskyStatusApiImplTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String text = "Estado de prueba enviado desde la aplicación SocialImprove con un test unitario JUNIT. Tiene un link: https://laboratoriorafa.mooo.com y 2 hashtags #SiguemeYTeSigo #Followback";
         
-        BlueskyCreateRecordResponse response = this.statusApi.postStatus(userId, text);
-        uriElim = response.getUri();
-        assertTrue(response.getUri() != null);
+        BlueskyStatus status = this.statusApi.postStatus(userId, text);
+        uriElim = status.getUri();
+        assertTrue(status.getUri() != null);
     }
     
     @Test
@@ -109,9 +109,9 @@ public class BlueskyStatusApiImplTest {
         String text = "Estado de prueba enviado desde la aplicación SocialImprove con un test unitario JUNIT. Tiene un link: https://laboratoriorafa.mooo.com y 2 hashtags #SiguemeYTeSigo #Followback";
         String imageType = "image/jpeg";
         
-        BlueskyCreateRecordResponse response = this.statusApi.postStatus(userId, text, imagen, imageType);
-        uriElim = response.getUri();
-        assertTrue(response.getUri() != null);
+        BlueskyStatus status = this.statusApi.postStatus(userId, text, imagen, imageType);
+        uriElim = status.getUri();
+        assertTrue(status.getUri() != null);
     }
     
     @Test @Order(8)
@@ -128,9 +128,9 @@ public class BlueskyStatusApiImplTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String text = "Esta es la lista con los capítulos del tutorial del lenguaje #Java:  https://www.youtube.com/watch?v=zkSz6gkY2hk&list=PLtdeXn2f7ZbPXR2R0JC0Qc8OURym5-Zze. Suscríbete a mi canal. #Programacion #Objetos #SiguemeYTeSigo #Followback";
         
-        BlueskyCreateRecordResponse response = this.statusApi.postStatus(userId, text);
-        uriElim = response.getUri();
-        assertTrue(response.getUri() != null);
+        BlueskyStatus status = this.statusApi.postStatus(userId, text);
+        uriElim = status.getUri();
+        assertTrue(status.getUri() != null);
     }
     
     @Test @Order(10)
