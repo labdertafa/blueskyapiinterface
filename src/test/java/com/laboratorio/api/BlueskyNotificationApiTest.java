@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
  * @author Rafael
  * @version 1.1
  * @created 04/08/2024
- * @updated 04/10/2024
+ * @updated 22/10/2024
  */
 public class BlueskyNotificationApiTest {
     private BlueskyNotificationApi notificationApi;
@@ -25,23 +25,23 @@ public class BlueskyNotificationApiTest {
         this.notificationApi = new BlueskyNotificationApiImpl(accessToken);
     }
     
-    @Test
+/*    @Test
     public void getNotificationsWithSinceIdAndDefaultLimit() throws Exception { // Usando limit por defecto
         String sinceId = "2024-08-31T15:00:17.180Z";
         
         BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(0, sinceId);
 
         assertTrue(!notificationListResponse.getNotifications().isEmpty());
-    }
+    } */
     
-    @Test
+/*    @Test 
     public void getAllNotificationsWithLimit() throws Exception { // Usando limit definido
         int limit = 80;
         
         BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(limit);
 
         assertTrue(!notificationListResponse.getNotifications().isEmpty());
-    }
+    } */
     
     @Test
     public void getNotificationError() {

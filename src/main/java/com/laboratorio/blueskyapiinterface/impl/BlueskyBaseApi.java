@@ -11,6 +11,7 @@ import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordRes
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyFollowListResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyLikePageResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyRepostPageResponse;
+import com.laboratorio.blueskyapiinterface.model.response.BlueskyUserListResponse;
 import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
 import com.laboratorio.clientapilibrary.ApiClient;
@@ -27,9 +28,9 @@ import org.apache.logging.log4j.Logger;
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 01/08/2024
- * @updated 04/10/2024
+ * @updated 22/10/2024
  */
 public class BlueskyBaseApi {
     protected static final Logger log = LogManager.getLogger(BlueskyBaseApi.class);
@@ -72,7 +73,7 @@ public class BlueskyBaseApi {
         }
     }
     
-    private BlueskyFollowListResponse getFollowAccountPage(int okStatus, String endpoint, String nombreParam, String id, int limit, String posicionInicial) throws Exception {
+    private BlueskyUserListResponse getFollowAccountPage(int okStatus, String endpoint, String nombreParam, String id, int limit, String posicionInicial) throws Exception {
         try {
             String jsonStr = this.getAccountPage(okStatus, endpoint, nombreParam, id, limit, posicionInicial);
             
@@ -96,7 +97,7 @@ public class BlueskyBaseApi {
             }
 
             // return accounts;
-            return new BlueskyFollowListResponse(maxId, accounts);
+            return new BlueskyUserListResponse(maxId, accounts);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
@@ -105,7 +106,7 @@ public class BlueskyBaseApi {
         }
     }
     
-    private BlueskyFollowListResponse getRepostAccountPage(int okStatus, String endpoint, String nombreParam, String id, int limit, String posicionInicial) throws Exception {
+    private BlueskyUserListResponse getRepostAccountPage(int okStatus, String endpoint, String nombreParam, String id, int limit, String posicionInicial) throws Exception {
         try {
             String jsonStr = this.getAccountPage(okStatus, endpoint, nombreParam, id, limit, posicionInicial);
             
@@ -117,7 +118,7 @@ public class BlueskyBaseApi {
                     .collect(Collectors.toList());
             
             // return accounts;
-            return new BlueskyFollowListResponse(maxId, accounts);
+            return new BlueskyUserListResponse(maxId, accounts);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
@@ -126,7 +127,7 @@ public class BlueskyBaseApi {
         }
     }
     
-    private BlueskyFollowListResponse getLikeAccountPage(int okStatus, String endpoint, String nombreParam, String id, int limit, String posicionInicial) throws Exception {
+    private BlueskyUserListResponse getLikeAccountPage(int okStatus, String endpoint, String nombreParam, String id, int limit, String posicionInicial) throws Exception {
         try {
             String jsonStr = this.getAccountPage(okStatus, endpoint, nombreParam, id, limit, posicionInicial);
             
@@ -139,7 +140,7 @@ public class BlueskyBaseApi {
                     .collect(Collectors.toList());
             
             // return accounts;
-            return new BlueskyFollowListResponse(maxId, accounts);
+            return new BlueskyUserListResponse(maxId, accounts);
         } catch (JsonSyntaxException e) {
             logException(e);
             throw e;
@@ -148,7 +149,7 @@ public class BlueskyBaseApi {
         }
     }
     
-    protected BlueskyFollowListResponse getBlueskyAccountList(InstruccionInfo instruccionInfo, String id, int quantity, String posicionInicial) throws Exception {
+    protected BlueskyUserListResponse getBlueskyAccountList(InstruccionInfo instruccionInfo, String id, int quantity, String posicionInicial) throws Exception {
         List<BlueskyActor> accounts = null;
         boolean continuar = true;
         String endpoint = instruccionInfo.getEndpoint();
@@ -161,7 +162,7 @@ public class BlueskyBaseApi {
         
         try {
             do {
-                BlueskyFollowListResponse accountListResponse;
+                BlueskyUserListResponse accountListResponse;
                 switch (instruccionInfo.getTypeAccountList()) {
                     case FOLLOW -> accountListResponse = this.getFollowAccountPage(instruccionInfo.getOkStatus(), endpoint, "actor", id, limit, max_id);
                     case REPOST -> accountListResponse = this.getRepostAccountPage(instruccionInfo.getOkStatus(), endpoint, "uri", id, limit, max_id);
@@ -194,10 +195,10 @@ public class BlueskyBaseApi {
             } while (continuar);
 
             if (quantity == 0) {
-                return new BlueskyFollowListResponse(max_id, accounts);
+                return new BlueskyUserListResponse(max_id, accounts);
             }
             
-            return new BlueskyFollowListResponse(max_id, accounts.subList(0, Math.min(quantity, accounts.size())));
+            return new BlueskyUserListResponse(max_id, accounts.subList(0, Math.min(quantity, accounts.size())));
         } catch (Exception e) {
             throw e;
         }

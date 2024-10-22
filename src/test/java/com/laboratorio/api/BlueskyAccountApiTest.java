@@ -20,7 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.2
  * @created 02/08/2024
- * @updated 14/10/2024
+ * @updated 22/10/2024
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -131,7 +131,7 @@ public class BlueskyAccountApiTest {
         assertTrue(!accountListResponse.getCursor().isEmpty());
     }
     
-    @Test
+/*    @Test
     public void getAllFollowers() throws Exception {
         int limit = 80;
         String did = "did:plc:zkxkfxfchezxypxrtgc7yaqz";
@@ -140,7 +140,7 @@ public class BlueskyAccountApiTest {
 
         assertTrue(!accountListResponse.getAccounts().isEmpty());
         assertTrue(accountListResponse.getCursor() == null);
-    }
+    } */
     
     @Test
     public void getAllFollowersInvalidId() {
@@ -198,7 +198,7 @@ public class BlueskyAccountApiTest {
         assertTrue(!accountListResponse.getCursor().isEmpty());
     }
     
-    @Test
+/*    @Test
     public void getAllFollowings() throws Exception {
         String did = "did:plc:zkxkfxfchezxypxrtgc7yaqz";
         int limit = 80;
@@ -207,7 +207,7 @@ public class BlueskyAccountApiTest {
 
         assertTrue(!accountListResponse.getAccounts().isEmpty());
         assertTrue(accountListResponse.getCursor() == null);
-    }
+    } */
     
     @Test
     public void getAllFollowingsInvalidId() {

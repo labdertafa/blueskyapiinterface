@@ -4,6 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import com.laboratorio.blueskyapiinterface.BlueskyAccountApi;
 import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.model.BlueskyAccount;
+import com.laboratorio.blueskyapiinterface.model.BlueskyActor;
 import com.laboratorio.blueskyapiinterface.model.BlueskyCreateRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyDeleteRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyRecord;
@@ -12,20 +13,22 @@ import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordRes
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyFollowListResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyRelationshipsResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskySuggestionsListResponse;
+import com.laboratorio.blueskyapiinterface.model.response.BlueskyUserListResponse;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  *
  * @author Rafael
- * @version 1.1
+ * @version 1.2
  * @created 02/08/2024
- * @updated 14/10/2024
+ * @updated 22/10/2024
  */
 public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAccountApi {
    public BlueskyAccountApiImpl(String accessToken) {
@@ -99,9 +102,8 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
     public BlueskyFollowListResponse getFollowers(String id, int limit, int quantity) throws Exception {
         return getFollowers(id, limit, quantity, null);
     }
-
-    @Override
-    public BlueskyFollowListResponse getFollowers(String id, int limit, int quantity, String posicionInicial) throws Exception {
+    
+    private BlueskyUserListResponse getUserFollowers(String id, int limit, int quantity, String posicionInicial) throws Exception {
         String endpoint = this.apiConfig.getProperty("getFollowers_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getFollowers_ok_status"));
         int defaultLimit = Integer.parseInt(this.apiConfig.getProperty("getFollowers_default_limit"));
@@ -112,6 +114,46 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
         }
         InstruccionInfo instruccionInfo = new InstruccionInfo(TypeAccountList.FOLLOW, endpoint, okStatus, usedLimit);
         return this.getBlueskyAccountList(instruccionInfo, id, quantity, posicionInicial);
+    }
+    
+    private List<BlueskyAccount> getUserListDetails(List<BlueskyActor> actors) {
+        List<BlueskyAccount> accounts = new ArrayList<>();
+        int maxLimit = Integer.parseInt(this.apiConfig.getProperty("getAccountsById_max_limit"));
+        int totalSize = actors.size();
+        for (int i = 0; i < totalSize; i += maxLimit) {
+            // Obtener el índice final del bloque
+            int endIndex = Math.min(i + maxLimit, totalSize);
+            List<String> usersId = actors.subList(i, endIndex).stream()
+                    .map(account -> account.getDid())
+                    .collect(Collectors.toList());
+            
+            // Procesar el bloque actual
+            List<BlueskyAccount> accountsDetails = this.getAccountsById(usersId);
+            accounts.addAll(accountsDetails);
+            log.debug(String.format("Se han obtenido los detalles de %d usuarios. Total de usuarios recuperados: %d/%d", accountsDetails.size(), accounts.size(), totalSize));
+        }
+        
+        return accounts;
+    }
+
+    @Override
+    public BlueskyFollowListResponse getFollowers(String id, int limit, int quantity, String posicionInicial) throws Exception {
+        BlueskyUserListResponse response = this.getUserFollowers(id, limit, quantity, posicionInicial);
+        List<BlueskyAccount> accounts = this.getUserListDetails(response.getAccounts());
+        return new BlueskyFollowListResponse(response.getCursor(), accounts);
+    }
+    
+    @Override
+    public List<String> getFollowersIds(String id) throws Exception {
+        return this.getFollowingsIds(id, 0);
+    }
+
+    @Override
+    public List<String> getFollowersIds(String id, int limit) throws Exception {
+        BlueskyUserListResponse response = this.getUserFollowers(id, limit, 0, null);
+        return response.getAccounts().stream()
+                .map(actor -> actor.getDid())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -128,9 +170,8 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
     public BlueskyFollowListResponse getFollowings(String id, int limit, int quantity) throws Exception {
         return this.getFollowings(id, limit, quantity, null);
     }
-
-    @Override
-    public BlueskyFollowListResponse getFollowings(String id, int limit, int quantity, String posicionInicial) throws Exception {
+    
+    private BlueskyUserListResponse getUserFollowings(String id, int limit, int quantity, String posicionInicial) throws Exception {
         String endpoint = this.apiConfig.getProperty("getFollowings_endpoint");
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getFollowings_ok_status"));
         int defaultLimit = Integer.parseInt(this.apiConfig.getProperty("getFollowings_default_limit"));
@@ -141,6 +182,26 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
         }
         InstruccionInfo instruccionInfo = new InstruccionInfo(TypeAccountList.FOLLOW, endpoint, okStatus, usedLimit);
         return this.getBlueskyAccountList(instruccionInfo, id, quantity, posicionInicial);
+    }
+
+    @Override
+    public BlueskyFollowListResponse getFollowings(String id, int limit, int quantity, String posicionInicial) throws Exception {
+        BlueskyUserListResponse response = this.getUserFollowings(id, limit, quantity, posicionInicial);
+        List<BlueskyAccount> accounts = this.getUserListDetails(response.getAccounts());
+        return new BlueskyFollowListResponse(response.getCursor(), accounts);
+    }
+    
+    @Override
+    public List<String> getFollowingsIds(String id) throws Exception {
+        return this.getFollowingsIds(id, 0);
+    }
+
+    @Override
+    public List<String> getFollowingsIds(String id, int limit) throws Exception {
+        BlueskyUserListResponse response = this.getUserFollowings(id, limit, 0, null);
+        return response.getAccounts().stream()
+                .map(actor -> actor.getDid())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -212,7 +273,7 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
         int okStatus = Integer.parseInt(this.apiConfig.getProperty("getSuggestions_ok_status"));
         int defaultLimit = Integer.parseInt(this.apiConfig.getProperty("getSuggestions_default_limit"));
         
-        List<BlueskyAccount> accounts = null;
+        List<BlueskyActor> actors = null;
         boolean continuar = true;
         String cursor = null;
         
@@ -222,28 +283,26 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
             do {
                 BlueskySuggestionsListResponse suggestionsListResponse = this.getSuggestionPage(uri, okStatus, defaultLimit, cursor);
                 log.debug("Elementos recuperados total: " + suggestionsListResponse.getActors().size());
-                List<String> usersId = suggestionsListResponse.getActors().stream()
-                        .map(a -> a.getDid())
-                        .collect(Collectors.toList());
-                List<BlueskyAccount> accountsDetails = this.getAccountsById(usersId);
-                if (accounts == null) {
-                    accounts = accountsDetails;
+                if (actors == null) {
+                    actors = suggestionsListResponse.getActors();
                 } else {
-                    accounts.addAll(accountsDetails);
+                    actors.addAll(suggestionsListResponse.getActors());
                 }
                 
                 cursor = suggestionsListResponse.getCursor();
-                log.debug("getSuggestions. Recuperados: " + accounts.size() + ". Cursor: " + cursor);
+                log.debug("getSuggestions. Recuperados: " + actors.size() + ". Cursor: " + cursor);
                 if (suggestionsListResponse.getActors().isEmpty()) {
                     continuar = false;
                 } else {
-                    if ((cursor == null) || (accounts.size() >= quantity)) {
+                    if ((cursor == null) || (actors.size() >= quantity)) {
                         continuar = false;
                     }
                 }
             } while (continuar);
             
-            return accounts.subList(0, Math.min(quantity, accounts.size()));
+            List<BlueskyActor> finalActors = actors.subList(0, Math.min(quantity, actors.size()));
+            
+            return this.getUserListDetails(finalActors);
         } catch (Exception e) {
             throw e;
         }

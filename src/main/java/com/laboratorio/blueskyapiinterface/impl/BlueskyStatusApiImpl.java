@@ -13,9 +13,9 @@ import com.laboratorio.blueskyapiinterface.model.BlueskyRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyStatus;
 import com.laboratorio.blueskyapiinterface.model.BlueskySubject;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordResponse;
-import com.laboratorio.blueskyapiinterface.model.response.BlueskyFollowListResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyTimelineResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUploadImageResponse;
+import com.laboratorio.blueskyapiinterface.model.response.BlueskyUserListResponse;
 import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * @author Rafael
  * @version 1.3
  * @created 03/08/2024
- * @updated 17/10/2024
+ * @updated 22/10/2024
  */
 public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatusApi {
     public BlueskyStatusApiImpl(String accessToken) {
@@ -200,7 +200,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
             usedLimit = defaultLimit;
         }
         InstruccionInfo instruccionInfo = new InstruccionInfo(TypeAccountList.REPOST, endpoint, okStatus, usedLimit);
-        BlueskyFollowListResponse response = this.getBlueskyAccountList(instruccionInfo, uri, quantity, null);
+        BlueskyUserListResponse response = this.getBlueskyAccountList(instruccionInfo, uri, quantity, null);
         return response.getAccounts();
     }
 
@@ -225,7 +225,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
             usedLimit = defaultLimit;
         }
         InstruccionInfo instruccionInfo = new InstruccionInfo(TypeAccountList.LIKE, endpoint, okStatus, usedLimit);
-        BlueskyFollowListResponse response = this.getBlueskyAccountList(instruccionInfo, uri, quantity, null);
+        BlueskyUserListResponse response = this.getBlueskyAccountList(instruccionInfo, uri, quantity, null);
         return response.getAccounts();
     }
 

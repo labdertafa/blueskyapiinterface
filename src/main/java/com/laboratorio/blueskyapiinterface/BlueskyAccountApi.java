@@ -8,9 +8,9 @@ import java.util.List;
 /**
  *
  * @author Rafael
- * @version 1.2
+ * @version 1.3
  * @created 02/08/2024
- * @updated 14/10/2024
+ * @updated 22/10/2024
  */
 public interface BlueskyAccountApi {
     // Obtiene la información de un usuario a partir de su ID
@@ -23,11 +23,17 @@ public interface BlueskyAccountApi {
     BlueskyFollowListResponse getFollowers(String id, int limit) throws Exception;
     BlueskyFollowListResponse getFollowers(String id, int limit, int quantity) throws Exception;
     BlueskyFollowListResponse getFollowers(String id, int limit, int quantity, String posicionInicial) throws Exception;
+    // Obtiene los identificadores de los seguidores de un usuario
+    List<String> getFollowersIds(String id) throws Exception;
+    List<String> getFollowersIds(String id, int limit) throws Exception;
     // Obtiene los seguidos de un usuario a partir de su id. Quantity indica el número de registros a recuperar (cero significa todos). Se puede indicar una posición inicial.
     BlueskyFollowListResponse getFollowings(String id) throws Exception;
     BlueskyFollowListResponse getFollowings(String id, int limit) throws Exception;
     BlueskyFollowListResponse getFollowings(String id, int limit, int quantity) throws Exception;
     BlueskyFollowListResponse getFollowings(String id, int limit, int quantity, String posicionInicial) throws Exception;
+    // Obtiene los identificadores de los seguidos de un usuario
+    List<String> getFollowingsIds(String id) throws Exception;
+    List<String> getFollowingsIds(String id, int limit) throws Exception;
     // El usuario "userID" sigue al usuario identificado por "id"
     boolean followAccount(String userId, String id);
     // El usuario "userID" deja de seguir al usuario que siguió con el Record de la "uri"
