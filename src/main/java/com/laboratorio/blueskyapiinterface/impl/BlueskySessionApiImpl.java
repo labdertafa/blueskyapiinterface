@@ -3,6 +3,7 @@ package com.laboratorio.blueskyapiinterface.impl;
 import com.google.gson.JsonSyntaxException;
 import com.laboratorio.blueskyapiinterface.BlueskySessionApi;
 import com.laboratorio.blueskyapiinterface.model.BlueskySession;
+import com.laboratorio.blueskyapiinterface.model.request.SessionRequest;
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
@@ -11,16 +12,44 @@ import com.laboratorio.clientapilibrary.model.ApiResponse;
 /**
  *
  * @author Rafael
- * @version 1.2
+ * @version 1.3
  * @created 01/08/2024
- * @updated 04/10/2024
+ * @updated 23/02/2025
  */
 public class BlueskySessionApiImpl extends BlueskyBaseApi implements BlueskySessionApi {
-    private final String refreshToken;
+    private String refreshToken;
     
     public BlueskySessionApiImpl(String accessToken, String refreshToken) {
         super(accessToken);
         this.refreshToken = refreshToken;
+    }
+    
+    @Override
+    public BlueskySession createSession(String user, String password) {
+        String endpoint = this.apiConfig.getProperty("createSession_endpoint");
+        int okStatus = Integer.parseInt(this.apiConfig.getProperty("createSession_ok_status"));
+        SessionRequest sessionRequest = new SessionRequest(user, password);
+        
+        try {
+            String url = endpoint;
+            String requestJson = this.gson.toJson(sessionRequest);
+            ApiRequest request = new ApiRequest(url, okStatus, ApiMethodType.POST, requestJson);
+            request.addApiHeader("Content-Type", "application/json");
+            request.addApiHeader("Accept", "*/*");
+            request.addApiHeader("Accept-Encoding", "gzip, deflate, br");
+            
+            ApiResponse response = this.client.executeApiRequest(request);
+            BlueskySession blueskySession = this.gson.fromJson(response.getResponseStr(), BlueskySession.class);
+            this.accessToken = blueskySession.getAccessJwt();
+            this.refreshToken = blueskySession.getRefreshJwt();
+            
+            return blueskySession;
+        } catch (JsonSyntaxException e) {
+            logException(e);
+            throw e;
+        } catch (ApiClientException e) {
+            throw e;
+        }
     }
 
     @Override
@@ -55,13 +84,16 @@ public class BlueskySessionApiImpl extends BlueskyBaseApi implements BlueskySess
             request.addApiHeader("Authorization", "Bearer " + this.refreshToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            BlueskySession blueskySession = this.gson.fromJson(response.getResponseStr(), BlueskySession.class);
+            this.accessToken = blueskySession.getAccessJwt();
+            this.refreshToken = blueskySession.getRefreshJwt();
             
-            return this.gson.fromJson(response.getResponseStr(), BlueskySession.class);
+            return blueskySession;
         } catch (JsonSyntaxException e) {
             logException(e);
             throw  e;
         } catch (ApiClientException e) {
             throw  e;
         }
-    }   
+    }
 }

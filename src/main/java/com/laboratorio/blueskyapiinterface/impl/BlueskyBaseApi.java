@@ -8,7 +8,6 @@ import com.laboratorio.blueskyapiinterface.model.BlueskyCreateRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyDeleteRecord;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyAccountPageResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordResponse;
-import com.laboratorio.blueskyapiinterface.model.response.BlueskyFollowListResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyLikePageResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyRepostPageResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUserListResponse;
@@ -30,12 +29,12 @@ import org.apache.logging.log4j.Logger;
  * @author Rafael
  * @version 1.2
  * @created 01/08/2024
- * @updated 22/10/2024
+ * @updated 23/02/2025
  */
 public class BlueskyBaseApi {
     protected static final Logger log = LogManager.getLogger(BlueskyBaseApi.class);
     protected final ApiClient client;
-    protected final String accessToken;
+    protected String accessToken;
     protected BlueskyApiConfig apiConfig;
     protected final Gson gson;
 

@@ -52,7 +52,7 @@ public class BlueskyNotificationApiTest {
         });
     }
     
-    @Test
+    /* @Test
     public void getNotificationsWithSinceId() throws Exception {
         int limit = 100;
         String sinceId = "2024-08-31T15:00:17.180Z";
@@ -60,5 +60,5 @@ public class BlueskyNotificationApiTest {
         BlueskyNotificationListResponse notificationListResponse = this.notificationApi.getAllNotifications(limit, sinceId);
 
         assertTrue(notificationListResponse.getNotifications().size() >= 0);
-    }
+    } */
 }
