@@ -6,8 +6,8 @@ import com.laboratorio.blueskyapiinterface.model.BlueskyActor;
 import com.laboratorio.blueskyapiinterface.model.BlueskyStatus;
 import com.laboratorio.blueskyapiinterface.model.BlueskySubject;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordResponse;
-import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
+import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,7 +23,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.2
  * @created 03/08/2024
- * @updated 17/10/2024
+ * @updated 04/05/2025
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -34,7 +34,8 @@ public class BlueskyStatusApiImplTest {
     
     @BeforeEach
     public void initApi() {
-        String accessToken = BlueskyApiConfig.getInstance().getProperty("test_access_token");
+        ReaderConfig config = new ReaderConfig("config//bluesky_api.properties");
+        String accessToken = config.getProperty("test_access_token");
         this.statusApi = new BlueskyStatusApiImpl(accessToken);
     }
     

@@ -11,13 +11,13 @@ import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordRes
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyLikePageResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyRepostPageResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUserListResponse;
-import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
 import com.laboratorio.clientapilibrary.ApiClient;
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
+import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,19 +29,19 @@ import org.apache.logging.log4j.Logger;
  * @author Rafael
  * @version 1.2
  * @created 01/08/2024
- * @updated 23/02/2025
+ * @updated 04/05/2025
  */
 public class BlueskyBaseApi {
     protected static final Logger log = LogManager.getLogger(BlueskyBaseApi.class);
     protected final ApiClient client;
     protected String accessToken;
-    protected BlueskyApiConfig apiConfig;
+    protected ReaderConfig apiConfig;
     protected final Gson gson;
 
     public BlueskyBaseApi(String accessToken) {
         this.client = new ApiClient();
         this.accessToken = accessToken;
-        this.apiConfig = BlueskyApiConfig.getInstance();
+        this.apiConfig = new ReaderConfig("config//bluesky_api.properties");
         this.gson = new Gson();
     }
     

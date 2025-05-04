@@ -1,6 +1,6 @@
 package com.laboratorio.blueskyapiinterface.model;
 
-import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
+import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.Setter;
  * @author Rafael
  * @version 1.0
  * @created 02/08/2024
- * @updated 04/08/2024
+ * @updated 04/05/2025
  */
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
@@ -49,7 +49,7 @@ public class BlueskyAccount {
     }
     
     public boolean isFuenteSeguidores() {
-        BlueskyApiConfig config = BlueskyApiConfig.getInstance();
+        ReaderConfig config = new ReaderConfig("config//bluesky_api.properties");
         int umbral = Integer.parseInt(config.getProperty("umbral_fuente_seguidores"));
         return this.followersCount >= umbral;
     }

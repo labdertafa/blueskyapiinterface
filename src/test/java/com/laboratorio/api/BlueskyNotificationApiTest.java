@@ -3,8 +3,8 @@ package com.laboratorio.api;
 import com.laboratorio.blueskyapiinterface.BlueskyNotificationApi;
 import com.laboratorio.blueskyapiinterface.impl.BlueskyNotificationApiImpl;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyNotificationListResponse;
-import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
+import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,14 +14,15 @@ import org.junit.jupiter.api.Test;
  * @author Rafael
  * @version 1.1
  * @created 04/08/2024
- * @updated 22/10/2024
+ * @updated 04/05/2025
  */
 public class BlueskyNotificationApiTest {
     private BlueskyNotificationApi notificationApi;
     
     @BeforeEach
     public void initNotificationApi() {
-        String accessToken = BlueskyApiConfig.getInstance().getProperty("test_access_token");
+        ReaderConfig config = new ReaderConfig("config//bluesky_api.properties");
+        String accessToken = config.getProperty("test_access_token");
         this.notificationApi = new BlueskyNotificationApiImpl(accessToken);
     }
     

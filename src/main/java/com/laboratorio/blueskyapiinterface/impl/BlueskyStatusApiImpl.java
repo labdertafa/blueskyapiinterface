@@ -16,7 +16,6 @@ import com.laboratorio.blueskyapiinterface.model.response.BlueskyCreateRecordRes
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyTimelineResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUploadImageResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUserListResponse;
-import com.laboratorio.blueskyapiinterface.utils.BlueskyApiConfig;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
 import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
@@ -36,7 +35,7 @@ import java.util.stream.Collectors;
  * @author Rafael
  * @version 1.3
  * @created 03/08/2024
- * @updated 22/10/2024
+ * @updated 04/15/2025
  */
 public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatusApi {
     public BlueskyStatusApiImpl(String accessToken) {
@@ -144,7 +143,7 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
         BlueskyRecord<String> record = null;
         // Si no hay imagen, se verifica si hay alguna URL de youtube y se recupera su Thumbnail para agregarlo al post
         if (imagePath == null) {
-            String destination = BlueskyApiConfig.getInstance().getProperty("temporal_image_path");
+            String destination = this.apiConfig.getProperty("temporal_image_path");
             String thumbnail = PostUtils.getThumbnail(elementos, destination);
             if (thumbnail != null) {
                 // Se sube la imagen a Bluesky
