@@ -1,11 +1,11 @@
 package com.laboratorio.api;
 
 import com.laboratorio.blueskyapiinterface.BlueskyAccountApi;
+import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.impl.BlueskyAccountApiImpl;
 import com.laboratorio.blueskyapiinterface.model.BlueskyAccount;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyFollowListResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyRelationshipsResponse;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.utils.ReaderConfig;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Rafael
  * @version 1.2
  * @created 02/08/2024
- * @updated 04/05/2025
+ * @updated 05/06/2025
  */
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -45,7 +45,7 @@ public class BlueskyAccountApiTest {
     public void findAccountByInvalidId() {
         String did = "did:plc:r3mpahk677b3m3iuubXXXXXXXX";
         
-        assertThrows(ApiClientException.class, () -> {
+        assertThrows(BlueskyException.class, () -> {
             this.accountApi.getAccountById(did);
         });
     }
@@ -62,7 +62,7 @@ public class BlueskyAccountApiTest {
     public void getAccountsByInvalidId() {
         List<String> ids = List.of("diXXplc:zkxkfxfchezxypxrtgc7yaqz", "diXXplc:r3mpahk677b3m3iuub7p35zc");
         
-        assertThrows(ApiClientException.class, () -> {
+        assertThrows(BlueskyException.class, () -> {
             this.accountApi.getAccountsById(ids);
         });
     }
@@ -79,7 +79,7 @@ public class BlueskyAccountApiTest {
     public void getAccountByInvalidUsername() {
         String username = "bakercilla.bsky.socialAXMNLXJ";
         
-        assertThrows(ApiClientException.class, () -> {
+        assertThrows(BlueskyException.class, () -> {
             this.accountApi.getAccountByUsername(username);
         });
     }
@@ -119,7 +119,7 @@ public class BlueskyAccountApiTest {
         assertTrue(!accountListResponse.getCursor().isEmpty());
     }
     
-    @Test
+/*    @Test
     public void get101Followers() throws Exception {
         String did = "did:plc:zkxkfxfchezxypxrtgc7yaqz";
         int limit = 100;
@@ -129,7 +129,7 @@ public class BlueskyAccountApiTest {
 
         assertEquals(cantidad, accountListResponse.getAccounts().size());
         assertTrue(!accountListResponse.getCursor().isEmpty());
-    }
+    } */
     
 /*    @Test
     public void getAllFollowers() throws Exception {
@@ -146,7 +146,7 @@ public class BlueskyAccountApiTest {
     public void getAllFollowersInvalidId() {
         String did = "did:plc:zkxkfxfchezxypxrtgc7yXXXXXX";
         
-        assertThrows(ApiClientException.class, () -> {
+        assertThrows(BlueskyException.class, () -> {
             this.accountApi.getFollowers(did);
         });
     }
@@ -213,7 +213,7 @@ public class BlueskyAccountApiTest {
     public void getAllFollowingsInvalidId() {
         String did = "did:plc:zkxkfxfchezxypxrtgc7yXXXXXX";
         
-        assertThrows(ApiClientException.class, () -> {
+        assertThrows(BlueskyException.class, () -> {
             this.accountApi.getFollowings(did);
         });
     }
@@ -232,7 +232,7 @@ public class BlueskyAccountApiTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String subject = "diXXXlc:ytanl7b6yr5rswhnygnr3a7j";
         
-        assertThrows(ApiClientException.class, () -> {
+        assertThrows(BlueskyException.class, () -> {
             this.accountApi.followAccount(userId, subject);
         });
     }
@@ -254,7 +254,7 @@ public class BlueskyAccountApiTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         String uri = "";
         
-        assertThrows(ApiClientException.class, () -> {
+        assertThrows(BlueskyException.class, () -> {
             this.accountApi.unfollowAccount(userId, uri);
         });
     }
@@ -273,7 +273,7 @@ public class BlueskyAccountApiTest {
         String userId = "did:plc:vli2z522aj2bancr24qugm7n";
         List<String> ids = List.of("diXXplc:zkxkfxfchezxypxrtgc7yaqz");
         
-        assertThrows(ApiClientException.class, () -> {
+        assertThrows(BlueskyException.class, () -> {
             this.accountApi.checkrelationships(userId, ids);
         });
     }

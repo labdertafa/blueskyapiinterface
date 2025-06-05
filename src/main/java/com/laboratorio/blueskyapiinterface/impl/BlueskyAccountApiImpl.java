@@ -1,6 +1,5 @@
 package com.laboratorio.blueskyapiinterface.impl;
 
-import com.google.gson.JsonSyntaxException;
 import com.laboratorio.blueskyapiinterface.BlueskyAccountApi;
 import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.model.BlueskyAccount;
@@ -15,7 +14,6 @@ import com.laboratorio.blueskyapiinterface.model.response.BlueskyRelationshipsRe
 import com.laboratorio.blueskyapiinterface.model.response.BlueskySuggestionsListResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUserListResponse;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -28,7 +26,7 @@ import java.util.stream.Collectors;
  * @author Rafael
  * @version 1.2
  * @created 02/08/2024
- * @updated 22/10/2024
+ * @updated 05/06/2025
  */
 public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAccountApi {
    public BlueskyAccountApiImpl(String accessToken) {
@@ -47,13 +45,11 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getAccountById: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), BlueskyAccount.class);
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
-        } catch (ApiClientException e) {
-            throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error consultando la cuenta Bluesky con id: " + id, e);
         }
     }
     
@@ -73,13 +69,11 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getAccountsById: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), BlueskyAccountListResponse.class).getProfiles();
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
-        } catch (ApiClientException e) {
-            throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error consultando varias cuentas Bluesky pos id", e);
         }
     }
 
@@ -239,13 +233,11 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response checkrelationships: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), BlueskyRelationshipsResponse.class);
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
-        } catch (ApiClientException e) {
-            throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error consultando las relaciones entre cuentas Bluesky", e);
         }
     }
     
@@ -260,10 +252,11 @@ public class BlueskyAccountApiImpl extends BlueskyBaseApi implements BlueskyAcco
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getSuggestionPage: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), BlueskySuggestionsListResponse.class);
-        } catch (BlueskyException e) {
-            throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error una página de sugerencias de seguimiento en Bluesky", e);
         }
     }
 

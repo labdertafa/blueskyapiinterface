@@ -1,7 +1,7 @@
 package com.laboratorio.blueskyapiinterface.impl;
 
-import com.google.gson.JsonSyntaxException;
 import com.laboratorio.blueskyapiinterface.BlueskyStatusApi;
+import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.model.BlueskyActor;
 import com.laboratorio.blueskyapiinterface.model.BlueskyCreateRecord;
 import com.laboratorio.blueskyapiinterface.model.BlueskyDeleteRecord;
@@ -17,7 +17,6 @@ import com.laboratorio.blueskyapiinterface.model.response.BlueskyTimelineRespons
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUploadImageResponse;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUserListResponse;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
  * @author Rafael
  * @version 1.3
  * @created 03/08/2024
- * @updated 04/15/2025
+ * @updated 05/06/2025
  */
 public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatusApi {
     public BlueskyStatusApiImpl(String accessToken) {
@@ -69,14 +68,12 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getStatusByIds: {}", response.getResponseStr());
             
             BlueskyPostList postList = gson.fromJson(response.getResponseStr(), BlueskyPostList.class);
             return Arrays.asList(postList.getPosts());
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
-        } catch (ApiClientException e) {
-            throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error recuperando los datos de varios estados Bluesky", e);
         }
     }
 
@@ -107,13 +104,11 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response uploadImage: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), BlueskyUploadImageResponse.class);
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
-        } catch (ApiClientException e) {
-            throw  e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error subiendo una imagen a Bluesky: " + filePath, e);
         }
     }
     
@@ -273,13 +268,11 @@ public class BlueskyStatusApiImpl extends BlueskyBaseApi implements BlueskyStatu
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getTimelinePage: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), BlueskyTimelineResponse.class);
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
-        } catch (ApiClientException e) {
-            throw  e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error recuperando una página del timeline de Bluesky", e);
         }
     }
 

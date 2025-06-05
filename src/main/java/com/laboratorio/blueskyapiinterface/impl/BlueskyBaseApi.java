@@ -1,7 +1,6 @@
 package com.laboratorio.blueskyapiinterface.impl;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.model.BlueskyActor;
 import com.laboratorio.blueskyapiinterface.model.BlueskyCreateRecord;
@@ -13,7 +12,6 @@ import com.laboratorio.blueskyapiinterface.model.response.BlueskyRepostPageRespo
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyUserListResponse;
 import com.laboratorio.blueskyapiinterface.utils.InstruccionInfo;
 import com.laboratorio.clientapilibrary.ApiClient;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -27,9 +25,9 @@ import org.apache.logging.log4j.Logger;
 /**
  *
  * @author Rafael
- * @version 1.2
+ * @version 1.3
  * @created 01/08/2024
- * @updated 04/05/2025
+ * @updated 05/06/2025
  */
 public class BlueskyBaseApi {
     protected static final Logger log = LogManager.getLogger(BlueskyBaseApi.class);
@@ -45,13 +43,6 @@ public class BlueskyBaseApi {
         this.gson = new Gson();
     }
     
-    protected void logException(Exception e) {
-        log.error("Error: " + e.getMessage());
-        if (e.getCause() != null) {
-            log.error("Causa: " + e.getCause().getMessage());
-        }
-    }
-    
     // Función que devuelve una página de seguidores o seguidos de una cuenta
     private String getAccountPage(int okStatus, String endpoint, String nombreParam, String id, int limit, String posicionInicial) throws Exception {
         try {
@@ -65,10 +56,11 @@ public class BlueskyBaseApi {
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response getAccountPage: {}", response.getResponseStr());
             
             return response.getResponseStr();
-        } catch (BlueskyException e) {
-            throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error recuperando la página de una cuenta Bluesky", e);
         }
     }
     
@@ -90,18 +82,16 @@ public class BlueskyBaseApi {
                     accounts = Arrays.stream(accountPageResponse.getFollows())
                             .collect(Collectors.toList());
                 } else {
-                    String str = "Error ejecutando getAccountPage: se recibió una respuesta inesperada (sin followers o follows)";
-                    throw new BlueskyException(BlueskyBaseApi.class.getName(), str);
+                    throw new BlueskyException("Error ejecutando getAccountPage: se recibió una respuesta inesperada (sin followers o follows)");
                 }
             }
 
             // return accounts;
             return new BlueskyUserListResponse(maxId, accounts);
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (BlueskyException e) {
             throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error recuperando la página de seguidores de una cuenta Bluesky", e);
         }
     }
     
@@ -118,11 +108,10 @@ public class BlueskyBaseApi {
             
             // return accounts;
             return new BlueskyUserListResponse(maxId, accounts);
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (BlueskyException e) {
             throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error recuperando la página de los repost en Bluesky", e);
         }
     }
     
@@ -140,11 +129,10 @@ public class BlueskyBaseApi {
             
             // return accounts;
             return new BlueskyUserListResponse(maxId, accounts);
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
         } catch (BlueskyException e) {
             throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error recuperando la página de los likes en Bluesky", e);
         }
     }
     
@@ -169,7 +157,7 @@ public class BlueskyBaseApi {
                     default -> {
                         String message = "Se recibió una solicitud para obtener un listado de cuentas de un tipo inesperado";
                         log.error(message);
-                        throw new BlueskyException(BlueskyBaseApi.class.getName(), message);
+                        throw new BlueskyException(message);
                     }
 
                 }
@@ -230,13 +218,11 @@ public class BlueskyBaseApi {
             request.addApiHeader("Authorization", "Bearer " + this.accessToken);
             
             ApiResponse response = this.client.executeApiRequest(request);
+            log.debug("Response createRecord: {}", response.getResponseStr());
             
             return this.gson.fromJson(response.getResponseStr(), BlueskyCreateRecordResponse.class);
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
-        } catch (ApiClientException e) {
-            throw  e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error creando un record en Bluesky", e);
         }
     }
     
@@ -255,11 +241,8 @@ public class BlueskyBaseApi {
             this.client.executeApiRequest(request);
             
             return true;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw  e;
-        } catch (ApiClientException e) {
-            throw  e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error borrando un record en Bluesky", e);
         }
     }
 }

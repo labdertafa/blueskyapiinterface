@@ -1,10 +1,9 @@
 package com.laboratorio.blueskyapiinterface.impl;
 
-import com.google.gson.JsonSyntaxException;
 import com.laboratorio.blueskyapiinterface.BlueskyNotificationApi;
+import com.laboratorio.blueskyapiinterface.exception.BlueskyException;
 import com.laboratorio.blueskyapiinterface.model.BlueskyNotification;
 import com.laboratorio.blueskyapiinterface.model.response.BlueskyNotificationListResponse;
-import com.laboratorio.clientapilibrary.exceptions.ApiClientException;
 import com.laboratorio.clientapilibrary.model.ApiMethodType;
 import com.laboratorio.clientapilibrary.model.ApiRequest;
 import com.laboratorio.clientapilibrary.model.ApiResponse;
@@ -15,7 +14,7 @@ import java.util.List;
  * @author Rafael
  * @version 1.2
  * @created 04/08/2024
- * @updated 04/10/2024
+ * @updated 05/06/2025
  */
 public class BlueskyNotificationApiImpl extends BlueskyBaseApi implements BlueskyNotificationApi {
     public BlueskyNotificationApiImpl(String accessToken) {
@@ -51,11 +50,8 @@ public class BlueskyNotificationApiImpl extends BlueskyBaseApi implements Bluesk
 
             // return accounts;
             return notificationListResponse;
-        } catch (JsonSyntaxException e) {
-            logException(e);
-            throw e;
-        } catch (ApiClientException e) {
-            throw e;
+        } catch (Exception e) {
+            throw new BlueskyException("Error recuperando una página de notificaciones en Bluesky", e);
         }
     }
 
